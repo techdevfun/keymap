@@ -1,8 +1,15 @@
 #!/bin/sh
-# Demo: scan the fake home in examples/demo-home.
+# Demo: scan a COPY of the fake home in examples/demo-home.
 # All values there are FAKE. Expected output is in expected-output.txt.
-# The .env is chmod 644 on purpose so keymap flags it as world-readable.
+# The copy lives in a temp dir outside any git repo, so the git checks
+# stay silent, and only .env is world-readable (644) so only it gets
+# flagged — the same output on any machine, including CI.
 set -eu
 cd "$(dirname "$0")/.."
-chmod 644 examples/demo-home/.env
-python3 -m keymap --root examples/demo-home || true
+DEMO_TMP="$(mktemp -d)"
+trap 'rm -rf "$DEMO_TMP"' EXIT INT TERM
+cp -r examples/demo-home/. "$DEMO_TMP/"
+chmod 600 "$DEMO_TMP/.claude.json" "$DEMO_TMP/.codex/config.toml" \
+  "$DEMO_TMP/.config/app.json" "$DEMO_TMP/.zsh_history"
+chmod 644 "$DEMO_TMP/.env"
+python3 -m keymap --root "$DEMO_TMP" || true

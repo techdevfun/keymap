@@ -45,6 +45,26 @@ class TestKeymap(unittest.TestCase):
         self.assertEqual(providers, {"openai", "anthropic"})
         self.assertEqual(len(result.occurrences), 2)
 
+    def test_stripe_pattern(self):
+        # Value assembled in parts so this file never contains a literal
+        # live-secret-key string (push protection would flag it).
+        stripe = "sk_" + "live_" + "K7Q9X2M4P8R3T6W1Y5A0B9C2D7E4F6"
+        self._write(".config/billing.json",
+                    '{"stripe_key": "%s"}\n' % stripe, mode=0o600)
+        result = scan(self.home)
+        self.assertEqual(len(result.occurrences), 1)
+        self.assertEqual(result.occurrences[0].provider, "stripe")
+
+    def test_stripe_pattern_detected(self):
+        # The Stripe value is built from parts so this test file itself
+        # never contains a contiguous live-key-looking literal.
+        value = "sk_" + "live_" + "K7Q9X2M4P8R3T6W1Y5A0B9C2D7E4F6"
+        self._write(".config/billing.json",
+                    '{"stripe_key": "%s"}\n' % value, mode=0o600)
+        result = scan(self.home)
+        self.assertEqual(len(result.occurrences), 1)
+        self.assertEqual(result.occurrences[0].provider, "stripe")
+
     def test_consecutive_lines_same_column_both_detected(self):
         # Regression: span bookkeeping is per-line, so a key on line N+1
         # at the same column as a key on line N must not be suppressed.

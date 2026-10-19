@@ -6,6 +6,9 @@
   values. If you need a new provider pattern, craft a fixture value
   that matches the pattern but contains no real key material — and
   check that `python -m keymap` on the repo reports nothing real.
+  Note: GitHub push protection blocks some live-key-looking literals
+  (e.g. a contiguous `sk_live_…` value) even when fake, so build such
+  fixture values from parts in test code instead of writing them out.
 - **keymap never prints key material.** Any new output path must show
   prefixes + fingerprints only. Add a test asserting the full fixture
   value does not appear in the report.

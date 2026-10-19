@@ -1,0 +1,5 @@
+# Demo Codex config — the Anthropic key here is the SAME FAKE key as in
+# .env, on purpose: keymap should flag it as sprawl.
+[model]
+provider = "anthropic"
+api_key = "sk-ant-api03-M3N8V2K5J9H4G7F1D6S0A3Q8W2E5R7T1"

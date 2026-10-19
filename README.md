@@ -49,16 +49,15 @@ Real output (see `examples/expected-output.txt`):
 
 ```
 keymap — API key footprint report
-Files scanned: 4  Skipped: 0
+Files scanned: 5  Skipped: 0
 
-Keys found: 6 across 4 file(s) — providers: openai, anthropic, stripe, github
+Keys found: 5 across 5 file(s) — providers: openai, github, anthropic
 
 Occurrences (prefix + fingerprint only — no key material):
   .claude.json:1  github  (unknown)  ghp_…685d57433a9e  [GitHub classic personal access token]
   .codex/config.toml:5  anthropic  api_key  sk-ant-…776a5e869d89  [Anthropic API key]
+  .config/app.json:1  anthropic  (unknown)  sk-ant-…776a5e869d89  [Anthropic API key]
   .env:3  openai  OPENAI_API_KEY  sk-proj-…29289fad0238  [OpenAI project API key]
-  .env:4  anthropic  ANTHROPIC_API_KEY  sk-ant-…776a5e869d89  [Anthropic API key]
-  .env:7  stripe  STRIPE_KEY  sk_live_…51b83fb8c67d  [Stripe live secret key]
   .zsh_history:1  openai  OPENAI_API_KEY  sk-proj-…29289fad0238  [OpenAI project API key]
 
 Findings:
@@ -68,14 +67,13 @@ Findings:
       openai key (…29289fad0238) was typed into shell history. Rotate the key, then clear that history entry.
   [MEDIUM] sprawl — .env, .zsh_history
       Same openai key (…29289fad0238) lives in 2 files. Keep one canonical home for it and delete the copies.
-  [MEDIUM] sprawl — .codex/config.toml, .env
+  [MEDIUM] sprawl — .codex/config.toml, .config/app.json
       Same anthropic key (…776a5e869d89) lives in 2 files. Keep one canonical home for it and delete the copies.
 
 Rotation checklist (revoke at the provider, then replace):
   - openai: https://platform.openai.com/api-keys
-  - anthropic: https://console.anthropic.com/settings/keys
-  - stripe: https://dashboard.stripe.com/apikeys
   - github: https://github.com/settings/tokens
+  - anthropic: https://console.anthropic.com/settings/keys
 
 After rotating: delete the old value from every file above, clear it from shell history, and re-run keymap to confirm.
 ```

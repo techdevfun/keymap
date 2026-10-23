@@ -103,6 +103,18 @@ PATTERNS: list[ProviderPattern] = [
         "rk_live_",
         "Stripe live restricted key",
     ),
+    _compile(
+        "openrouter",
+        r"sk-or-v1-[A-Za-z0-9]{32,}",
+        "sk-or-v1-",
+        "OpenRouter API key",
+    ),
+    _compile(
+        "groq",
+        r"gsk_[A-Za-z0-9]{20,}",
+        "gsk_",
+        "Groq API key",
+    ),
 ]
 
 # Generic `NAME = value` assignments whose name smells like a secret but
@@ -130,6 +142,8 @@ ROTATION_URLS = {
     "aws": "https://console.aws.amazon.com/iam/home#/security_credentials",
     "slack": "https://api.slack.com/apps",
     "stripe": "https://dashboard.stripe.com/apikeys",
+    "openrouter": "https://openrouter.ai/settings/keys",
+    "groq": "https://console.groq.com/keys",
     "unrecognized": "",
 }
 

@@ -39,7 +39,8 @@ provider it found.
 
 `examples/demo-home/` is a fake home directory with the same Anthropic
 key in two files, an OpenAI key in `.env` *and* shell history, a GitHub
-token in `~/.claude.json`, and a world-readable `.env`. Run:
+token in `~/.claude.json`, an OpenRouter key in `.codex/auth.json`,
+and a world-readable `.env`. Run:
 
 ```bash
 sh examples/run-demo.sh
@@ -49,12 +50,13 @@ Real output (see `examples/expected-output.txt`):
 
 ```
 keymap — API key footprint report
-Files scanned: 5  Skipped: 0
+Files scanned: 6  Skipped: 0
 
-Keys found: 5 across 5 file(s) — providers: openai, github, anthropic
+Keys found: 6 across 6 file(s) — providers: openai, github, anthropic, openrouter
 
 Occurrences (prefix + fingerprint only — no key material):
   .claude.json:1  github  (unknown)  ghp_…685d57433a9e  [GitHub classic personal access token]
+  .codex/auth.json:1  openrouter  (unknown)  sk-or-v1-…d0c26475b1a8  [OpenRouter API key]
   .codex/config.toml:5  anthropic  api_key  sk-ant-…776a5e869d89  [Anthropic API key]
   .config/app.json:1  anthropic  (unknown)  sk-ant-…776a5e869d89  [Anthropic API key]
   .env:3  openai  OPENAI_API_KEY  sk-proj-…29289fad0238  [OpenAI project API key]
@@ -74,6 +76,7 @@ Rotation checklist (revoke at the provider, then replace):
   - openai: https://platform.openai.com/api-keys
   - github: https://github.com/settings/tokens
   - anthropic: https://console.anthropic.com/settings/keys
+  - openrouter: https://openrouter.ai/settings/keys
 
 After rotating: delete the old value from every file above, clear it from shell history, and re-run keymap to confirm.
 ```

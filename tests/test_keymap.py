@@ -55,6 +55,21 @@ class TestKeymap(unittest.TestCase):
         self.assertEqual(len(result.occurrences), 1)
         self.assertEqual(result.occurrences[0].provider, "stripe")
 
+    def test_openrouter_and_groq_patterns(self):
+        # Values assembled in parts so this file never contains a literal
+        # key-shaped string (push protection would flag it).
+        or_key = "sk-" + "or-v1-" + "7f3a" * 16
+        groq_key = "gs" + "k_" + "9c2e" * 13
+        self._write(".codex/auth.json",
+                    '{"OPENROUTER_API_KEY": "%s"}\n' % or_key, mode=0o600)
+        self._write(".config/groq.json",
+                    '{"api_key": "%s"}\n' % groq_key, mode=0o600)
+        result = scan(self.home)
+        providers = {o.provider for o in result.occurrences}
+        self.assertEqual(providers, {"openrouter", "groq"})
+        for occ in result.occurrences:
+            self.assertNotIn("key material", occ.prefix)
+
     def test_consecutive_lines_same_column_both_detected(self):
         # Regression: span bookkeeping is per-line, so a key on line N+1
         # at the same column as a key on line N must not be suppressed.

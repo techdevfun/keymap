@@ -9,7 +9,7 @@ cd "$(dirname "$0")/.."
 DEMO_TMP="$(mktemp -d)"
 trap 'rm -rf "$DEMO_TMP"' EXIT INT TERM
 cp -r examples/demo-home/. "$DEMO_TMP/"
-chmod 600 "$DEMO_TMP/.claude.json" "$DEMO_TMP/.codex/config.toml" \
+chmod 600 "$DEMO_TMP/.claude.json" "$DEMO_TMP/.codex/config.toml" "$DEMO_TMP/.codex/auth.json" \
   "$DEMO_TMP/.config/app.json" "$DEMO_TMP/.zsh_history"
 chmod 644 "$DEMO_TMP/.env"
 python3 -m keymap --root "$DEMO_TMP" || true

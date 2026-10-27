@@ -131,8 +131,14 @@ def _scan_file(path: Path, rel: str, result: ScanResult) -> None:
         result.errors.append(f"{rel}: {exc}")
         return
     result.files_scanned += 1
+    before = len(result.occurrences)
     result.occurrences.extend(_scan_text(text, rel))
-    _permission_check(path, rel, result)
+    # A world-readable permission is only a finding for a file that
+    # actually holds a key: flagging every 644 config file, key or not,
+    # buried real exposures under noise (a clean .zshrc was reported
+    # as a high finding whenever any other file held a key).
+    if len(result.occurrences) > before:
+        _permission_check(path, rel, result)
 
 
 def _permission_check(path: Path, rel: str, result: ScanResult) -> None:

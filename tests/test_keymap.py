@@ -112,6 +112,15 @@ class TestKeymap(unittest.TestCase):
         self.assertEqual(len(wr), 1)
         self.assertIn("644", wr[0].detail)
 
+    def test_clean_world_readable_file_not_flagged(self):
+        # Regression: a key-free 644 file must not be reported as a
+        # world-readable finding just because another file holds a key.
+        self._write(".env", f"OPENAI_API_KEY={OPENAI_FAKE}\n", mode=0o600)
+        self._write(".zshrc", "# nothing secret\n", mode=0o644)
+        result = scan(self.home)
+        self.assertEqual([f for f in result.findings
+                          if f.kind == "world-readable"], [])
+
     def test_private_file_not_flagged(self):
         self._write(".env", f"OPENAI_API_KEY={OPENAI_FAKE}\n", mode=0o600)
         result = scan(self.home)

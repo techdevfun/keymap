@@ -119,7 +119,8 @@ Exit codes: `0` = no keys found, `1` = keys/findings found,
 
 Recognised providers: Anthropic, OpenAI, Google, GitHub (classic,
 fine-grained, OAuth, server-to-server), AWS access key IDs, Slack,
-Stripe. Anything assigned to a `*_API_KEY` / `*_TOKEN` / `*_SECRET` /
+Stripe, OpenRouter, Groq. Anything assigned to a `*_API_KEY` /
+`*_TOKEN` / `*_SECRET` /
 `*_PASSWORD` variable that matches no known pattern is reported as
 `unrecognized` instead of ignored. Placeholder values (`your-token-here`,
 `${OPENAI_API_KEY}`, `xxx…`) are skipped.

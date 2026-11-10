@@ -48,6 +48,11 @@ def main(argv: list[str] | None = None) -> int:
         print(render_json(result), end="")
     else:
         print(render_human(result), end="")
+    if result.errors:
+        # Usage or I/O error (e.g. a named file did not exist): the
+        # report is partial, so never report it as clean (0) or
+        # findings-only (1).
+        return 2
     return 1 if result.has_findings else 0
 
 

@@ -24,7 +24,13 @@ def render_human(result: ScanResult) -> str:
     lines.append("")
 
     if not result.occurrences:
-        lines.append("No provider keys found in scanned config files. Clean.")
+        if result.errors:
+            # Never call an incomplete scan "Clean": files that could
+            # not be read may hold keys the report does not show.
+            lines.append("Scan incomplete — some files could not be read "
+                         "(see errors above).")
+        else:
+            lines.append("No provider keys found in scanned config files. Clean.")
         return "\n".join(lines) + "\n"
 
     lines.append(f"Keys found: {len(result.occurrences)} "

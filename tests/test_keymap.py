@@ -174,6 +174,43 @@ class TestKeymap(unittest.TestCase):
             code = main(["--root", str(self.home), str(path)])
         self.assertEqual(code, 1)
 
+    def test_missing_explicit_file_exit_two(self):
+        # Regression: a mistyped explicit path must never report "Clean"
+        # with exit 0 — nothing was scanned, so there is nothing to
+        # call clean. Exit 2 = usage or I/O error (see README).
+        missing = self.home / "nope.env"
+        out = io.StringIO()
+        with redirect_stdout(out):
+            code = main(["--root", str(self.home), str(missing)])
+        self.assertEqual(code, 2)
+        text = out.getvalue()
+        self.assertIn("no such file", text)
+        self.assertIn(str(missing), text)
+        self.assertNotIn("Clean", text)
+
+    def test_missing_file_recorded_in_result(self):
+        missing = self.home / "nope.env"
+        result = scan_paths([missing], self.home)
+        self.assertEqual(result.files_scanned, 0)
+        self.assertEqual(len(result.errors), 1)
+        self.assertIn(str(missing), result.errors[0])
+        payload = json.loads(render_json(result))
+        self.assertEqual(len(payload["summary"]["errors"]), 1)
+
+    def test_missing_file_with_key_still_exit_two(self):
+        # An I/O error means the report is partial: exit 2 wins over
+        # "keys found" (1), but the found key is still reported.
+        good = self._write(".env", f"OPENAI_API_KEY={OPENAI_FAKE}\n", mode=0o600)
+        missing = self.home / "nope.env"
+        out = io.StringIO()
+        with redirect_stdout(out):
+            code = main(["--root", str(self.home), str(good), str(missing)])
+        self.assertEqual(code, 2)
+        text = out.getvalue()
+        self.assertIn("OPENAI_API_KEY", text)
+        self.assertIn("no such file", text)
+        self.assertNotIn("Clean", text)
+
     @unittest.skipUnless(shutil.which("git"), "git not available")
     def test_git_not_ignored_flagged(self):
         subprocess.run(["git", "init", "-q"], cwd=self.home, check=True)

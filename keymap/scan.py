@@ -277,12 +277,19 @@ def scan_paths(paths: list[Path], root: Path) -> ScanResult:
     """Scan explicit files (used by tests and by `keymap <file> ...`)."""
     result = ScanResult()
     for path in paths:
-        if path.is_file():
-            try:
-                rel = os.path.relpath(path, root)
-            except ValueError:
-                rel = str(path)
-            _scan_file(path, rel, result)
+        if not path.is_file():
+            # A mistyped explicit path must never silently report "Clean":
+            # record it so the CLI can fail with exit code 2 instead.
+            if path.exists():
+                result.errors.append(f"{path}: not a regular file")
+            else:
+                result.errors.append(f"{path}: no such file")
+            continue
+        try:
+            rel = os.path.relpath(path, root)
+        except ValueError:
+            rel = str(path)
+        _scan_file(path, rel, result)
     _history_check(result)
     _sprawl_check(result)
     _git_check(root, result)
